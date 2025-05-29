@@ -1,0 +1,100 @@
+# KeepSpace Plugin English Translation
+# Copyright (C) 2024 KeepSpace Team
+# This file is distributed under the same license as the KeepSpace plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: KeepSpace 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: KeepSpace Team\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "KeepSpace 设置"
+msgstr "KeepSpace Settings"
+
+msgid "KeepSpace"
+msgstr "KeepSpace"
+
+msgid "设置已保存！"
+msgstr "Settings saved!"
+
+msgid "重要提醒：更改特殊空格类型只对新保存的内容生效，现有内容中的特殊空格不会自动更改。"
+msgstr "Important Notice: Changing the special space type only affects newly saved content. Existing special spaces will not be automatically changed."
+
+msgid "特殊空格类型"
+msgstr "Special Space Type"
+
+msgid "不断行空格 (\u00A0)"
+msgstr "Non-breaking Space (\u00A0)"
+
+msgid "推荐"
+msgstr "Recommended"
+
+msgid "优点："
+msgstr "Advantages: "
+
+msgid "只算1个字符，不影响摘要截取；与&nbsp;显示效果相同；兼容性最好"
+msgstr "Counts as 1 character, doesn't affect excerpt truncation; same display effect as &nbsp;; best compatibility"
+
+msgid "缺点："
+msgstr "Disadvantages: "
+
+msgid "在极少数老旧系统中可能显示异常"
+msgstr "May display abnormally in very few legacy systems"
+
+msgid "适用："
+msgstr "Suitable for: "
+
+msgid "大部分情况的最佳选择"
+msgstr "Best choice for most situations"
+
+msgid "中文全角空格 (\u3000)"
+msgstr "Chinese Full-width Space (\u3000)"
+
+msgid "只算1个字符；在中文环境下非常自然；宽度正好是一个中文字符"
+msgstr "Counts as 1 character; very natural in Chinese context; width equals one Chinese character"
+
+msgid "比普通空格宽，在英文中会显得突兀"
+msgstr "Wider than normal space, looks awkward in English text"
+
+msgid "纯中文内容，特别是段落缩进"
+msgstr "Pure Chinese content, especially paragraph indentation"
+
+msgid "&amp;nbsp; - HTML实体空格"
+msgstr "&amp;nbsp; - HTML Entity Space"
+
+msgid "兼容性最好；所有浏览器都支持"
+msgstr "Best compatibility; supported by all browsers"
+
+msgid "算5个字符，会影响摘要截取和字符统计"
+msgstr "Counts as 5 characters, affects excerpt truncation and character counting"
+
+msgid "对兼容性要求极高，不在意字符计数的情况"
+msgstr "When extremely high compatibility is required and character counting is not a concern"
+
+msgid "功能开关"
+msgstr "Function Switches"
+
+msgid "启用标题空格保护"
+msgstr "Enable title space protection"
+
+msgid "启用摘要空格保护"
+msgstr "Enable excerpt space protection"
+
+msgid "启用正文空格保护"
+msgstr "Enable content space protection"
+
+msgid "启用评论空格保护"
+msgstr "Enable comment space protection"
+
+msgid "标题和评论暂不支持开头空格。"
+msgstr "Title and comments do not support leading spaces yet."
+
+msgid "保存设置"
+msgstr "Save Settings" 
