@@ -3,7 +3,7 @@ Contributors: cottboy
 Tags: space character, space, Preserve spaces, Keep spaces, Retain spaces
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -62,6 +62,9 @@ KeepSpace是一款专为解决WordPress中空格被自动省略问题而设计�
 
 == Changelog ==
 
+= 1.0.3 =
+* 再次修复评论开头和结尾空格无法保留的问题。
+
 = 1.0.2 =
 * 代码优化和安全性改进
 * 完善nonce验证机制
@@ -78,6 +81,9 @@ KeepSpace是一款专为解决WordPress中空格被自动省略问题而设计�
 * 支持中英文界面
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+再次修复评论开头和结尾空格无法保留的问题。
 
 = 1.0.2 =
 代码优化和安全性改进。

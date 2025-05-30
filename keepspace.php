@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KeepSpace
  * Description: 自动将空格转换为特殊字符空格，防止HTML省略空格
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: cottboy
  * Author URI: https://github.com/cottboy
  * Plugin URI: https://github.com/cottboy/keepspace
@@ -198,8 +198,58 @@ function keepspace_modify_post_data() {
         }
     }
     
-    // 注意：评论处理已移至WordPress标准钩子（pre_comment_content和wp_insert_comment）
-    // 这些钩子有内置的安全验证机制，比直接修改POST数据更安全
+    // 处理评论提交 - 添加安全验证
+    if (isset($_POST['comment']) && !empty($_POST['comment']) && get_option('keepspace_comment', '1') == '1') {
+        // 安全获取评论内容
+        $raw_comment = wp_unslash($_POST['comment']);
+        
+        // 检查是否是评论提交
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+        $is_comment_submission = (
+            isset($_POST['comment_post_ID']) || 
+            isset($_POST['submit']) || 
+            (strpos($request_uri, 'wp-comments-post.php') !== false)
+        );
+        
+        if ($is_comment_submission) {
+            // 基本的安全检查：确保comment_post_ID是有效的数字
+            if (isset($_POST['comment_post_ID']) && is_numeric($_POST['comment_post_ID'])) {
+                $post_id = intval($_POST['comment_post_ID']);
+                
+                // 验证文章是否存在且允许评论
+                $post = get_post($post_id);
+                if ($post && comments_open($post_id)) {
+                    // 先替换空格，再进行基本的安全处理（不使用trim的函数）
+                    $comment_content = keepspace_replace_spaces_simple($raw_comment);
+                    
+                    // 基本的安全过滤，但不trim空格
+                    $comment_content = wp_kses($comment_content, array(
+                        'a' => array('href' => array(), 'title' => array()),
+                        'em' => array(),
+                        'strong' => array(),
+                        'code' => array(),
+                        'blockquote' => array('cite' => array()),
+                        'br' => array(),
+                        'p' => array(),
+                    ));
+                    
+                    $_POST['comment'] = $comment_content;
+                }
+            }
+        }
+    }
+}
+
+// 处理评论保存 - 使用WordPress标准钩子作为备用
+add_filter('preprocess_comment', 'keepspace_process_comment_with_verification', 10);
+function keepspace_process_comment_with_verification($commentdata) {
+    // 检查设置是否启用
+    if (get_option('keepspace_comment', '1') == '1' && !empty($commentdata['comment_content'])) {
+        // WordPress的preprocess_comment钩子已经有内置的验证机制
+        // 包括spam检查、权限验证等，所以这里是安全的
+        $commentdata['comment_content'] = keepspace_replace_spaces_simple($commentdata['comment_content']);
+    }
+    return $commentdata;
 }
 
 // 处理古腾堡编辑器的REST API请求
@@ -209,27 +259,6 @@ function keepspace_process_rest_title($prepared_post, $request) {
         $prepared_post->post_title = keepspace_replace_spaces_simple($prepared_post->post_title);
     }
     return $prepared_post;
-}
-
-// 处理评论保存 - 多重钩子确保处理
-add_filter('pre_comment_content', 'keepspace_process_comment', 10);
-function keepspace_process_comment($comment_content) {
-    if (get_option('keepspace_comment', '1') == '1' && !empty($comment_content)) {
-        // WordPress的pre_comment_content钩子已经有内置的验证机制
-        // 包括spam检查、权限验证等，所以这里是安全的
-        return keepspace_replace_spaces_simple($comment_content);
-    }
-    return $comment_content;
-}
-
-// 额外的评论处理钩子，确保万无一失
-add_filter('wp_insert_comment', 'keepspace_process_comment_before_insert', 10, 1);
-function keepspace_process_comment_before_insert($commentdata) {
-    if (get_option('keepspace_comment', '1') == '1' && !empty($commentdata['comment_content'])) {
-        // wp_insert_comment钩子也有WordPress内置的安全验证
-        $commentdata['comment_content'] = keepspace_replace_spaces_simple($commentdata['comment_content']);
-    }
-    return $commentdata;
 }
 
 // 智能空格替换函数
