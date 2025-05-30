@@ -93,8 +93,5 @@ msgstr "Enable content space protection"
 msgid "启用评论空格保护"
 msgstr "Enable comment space protection"
 
-msgid "标题和评论暂不支持开头空格。"
-msgstr "Title and comments do not support leading spaces yet."
-
 msgid "保存设置"
 msgstr "Save Settings" 

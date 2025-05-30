@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KeepSpace
  * Description: 自动将空格转换为特殊字符空格，防止HTML省略空格
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: cottboy
  * Author URI: https://github.com/cottboy
  * Plugin URI: https://github.com/cottboy/keepspace
@@ -138,9 +138,6 @@ function keepspace_settings_page() {
                                 <?php echo __('启用评论空格保护', 'keepspace'); ?>
                             </label>
                         </fieldset>
-                        <p class="description" style="margin-top: 10px;">
-                            <?php echo __('标题和评论暂不支持开头空格。', 'keepspace'); ?>
-                        </p>
                     </td>
                 </tr>
             </table>
@@ -151,11 +148,11 @@ function keepspace_settings_page() {
 }
 
 // 处理文章保存
-add_filter('wp_insert_post_data', 'keepspace_process_post_data', 10, 2);
+add_filter('wp_insert_post_data', 'keepspace_process_post_data', 5, 2);
 function keepspace_process_post_data($data, $postarr) {
-    // 处理标题
+    // 处理标题 - 使用更强力的处理
     if (get_option('keepspace_title', '1') == '1' && !empty($data['post_title'])) {
-        $data['post_title'] = keepspace_replace_spaces($data['post_title']);
+        $data['post_title'] = keepspace_replace_spaces_simple($data['post_title']);
     }
     
     // 处理摘要
@@ -171,13 +168,47 @@ function keepspace_process_post_data($data, $postarr) {
     return $data;
 }
 
-// 处理评论保存
-add_filter('pre_comment_content', 'keepspace_process_comment');
+// 最直接的方法：在WordPress开始处理之前就修改POST数据
+add_action('init', 'keepspace_modify_post_data');
+function keepspace_modify_post_data() {
+    // 只在保存文章时处理
+    if (isset($_POST['action']) && ($_POST['action'] == 'editpost' || $_POST['action'] == 'post-quickpress-publish')) {
+        if (get_option('keepspace_title', '1') == '1' && isset($_POST['post_title'])) {
+            $_POST['post_title'] = keepspace_replace_spaces_simple($_POST['post_title']);
+        }
+    }
+    
+    // 处理评论提交时的POST数据
+    if (isset($_POST['comment']) && get_option('keepspace_comment', '1') == '1') {
+        $_POST['comment'] = keepspace_replace_spaces_simple($_POST['comment']);
+    }
+}
+
+// 处理古腾堡编辑器的REST API请求
+add_filter('rest_pre_insert_post', 'keepspace_process_rest_title', 10, 2);
+function keepspace_process_rest_title($prepared_post, $request) {
+    if (get_option('keepspace_title', '1') == '1' && isset($prepared_post->post_title)) {
+        $prepared_post->post_title = keepspace_replace_spaces_simple($prepared_post->post_title);
+    }
+    return $prepared_post;
+}
+
+// 处理评论保存 - 多重钩子确保处理
+add_filter('pre_comment_content', 'keepspace_process_comment', 10);
 function keepspace_process_comment($comment_content) {
     if (get_option('keepspace_comment', '1') == '1' && !empty($comment_content)) {
-        return keepspace_replace_spaces($comment_content);
+        return keepspace_replace_spaces_simple($comment_content);
     }
     return $comment_content;
+}
+
+// 额外的评论处理钩子，确保万无一失
+add_filter('wp_insert_comment', 'keepspace_process_comment_before_insert', 10, 1);
+function keepspace_process_comment_before_insert($commentdata) {
+    if (get_option('keepspace_comment', '1') == '1' && !empty($commentdata['comment_content'])) {
+        $commentdata['comment_content'] = keepspace_replace_spaces_simple($commentdata['comment_content']);
+    }
+    return $commentdata;
 }
 
 // 智能空格替换函数
@@ -210,4 +241,27 @@ function keepspace_replace_spaces($content) {
     }
     
     return implode('', $parts);
+}
+
+// 简单空格替换函数（专门用于标题）
+function keepspace_replace_spaces_simple($content) {
+    // 获取用户选择的空格类型
+    $space_type = get_option('keepspace_space_type', 'unicode_nbsp');
+    
+    // 根据空格类型确定替换字符
+    switch ($space_type) {
+        case 'unicode_nbsp':
+            $replacement = "\u{00A0}"; // 不断行空格 Unicode字符
+            break;
+        case 'fullwidth_space':
+            $replacement = "\u{3000}"; // 中文全角空格
+            break;
+        case 'html_nbsp':
+        default:
+            $replacement = '&nbsp;'; // HTML实体空格
+            break;
+    }
+    
+    // 直接替换所有空格，适用于标题等纯文本内容
+    return str_replace(' ', $replacement, $content);
 } 
