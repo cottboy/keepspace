@@ -94,4 +94,10 @@ msgid "启用评论空格保护"
 msgstr "Enable comment space protection"
 
 msgid "保存设置"
-msgstr "Save Settings" 
+msgstr "Save Settings"
+
+msgid "安全验证失败，请重试。"
+msgstr "Security verification failed, please try again."
+
+msgid "您没有权限执行此操作。"
+msgstr "You do not have permission to perform this action." 
