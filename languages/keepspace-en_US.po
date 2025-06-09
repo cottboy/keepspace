@@ -1,14 +1,12 @@
 # KeepSpace Plugin English Translation
-# Copyright (C) 2024 KeepSpace Team
+# Copyright (C) 2025 cottboy
 # This file is distributed under the same license as the KeepSpace plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: KeepSpace 1.0.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-01 00:00+0000\n"
-"PO-Revision-Date: 2024-01-01 00:00+0000\n"
-"Last-Translator: KeepSpace Team\n"
-"Language-Team: English\n"
+"Project-Id-Version: KeepSpace 1.0.4\n"
+"POT-Creation-Date: 2025-06-09 08:00+0800\n"
+"PO-Revision-Date: 2025-06-09 08:00+0800\n"
+"Last-Translator: cottboy\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,8 +37,8 @@ msgstr "Recommended"
 msgid "优点："
 msgstr "Advantages: "
 
-msgid "只算1个字符，不影响摘要截取；与&nbsp;显示效果相同；兼容性最好"
-msgstr "Counts as 1 character, doesn't affect excerpt truncation; same display effect as &nbsp;; best compatibility"
+msgid "与普通空格显示效果相同；只算1个字符，不影响摘要截取和字符统计"
+msgstr "Same display effect as normal space; counts as 1 character, doesn't affect excerpt truncation and character counting"
 
 msgid "缺点："
 msgstr "Disadvantages: "
