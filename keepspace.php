@@ -4,8 +4,7 @@
  * Description: 自动将空格转换为特殊字符空格，防止HTML省略空格
  * Version: 1.0.4
  * Author: cottboy
- * Author URI: https://github.com/cottboy
- * Plugin URI: https://github.com/cottboy/keepspace
+ * Author URI: https://www.joyfamily.top
  * Text Domain: keepspace
  * Domain Path: /languages
  * License: GPL v3 or later
