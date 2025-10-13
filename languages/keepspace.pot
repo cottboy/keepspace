@@ -9,127 +9,126 @@ msgstr ""
 "Project-Id-Version: KeepSpace 1.0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-13 19:17+0800\n"
-"PO-Revision-Date: 2025-10-13 19:34+0800\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.7\n"
 
 #: keepspace.php:45 keepspace.php:46 keepspace.php:100
 msgid "KeepSpace"
-msgstr "KeepSpace"
+msgstr ""
 
 #: keepspace.php:57
 msgid "设置"
-msgstr "Settings"
+msgstr ""
 
 #: keepspace.php:68
 msgid "安全验证失败，请重试。"
-msgstr "Security verification failed, please try again."
+msgstr ""
 
 #: keepspace.php:73
 msgid "您没有权限执行此操作。"
-msgstr "You do not have permission to perform this operation."
+msgstr ""
 
 #: keepspace.php:90
 msgid "设置已保存！"
-msgstr "Settings saved!"
+msgstr ""
 
 #: keepspace.php:106
 msgid "特殊空格类型"
-msgstr "Special space types"
+msgstr ""
 
 #: keepspace.php:111
 msgid "不断行空格 (\\u00A0)"
-msgstr "Non-breaking space (\\u00A0)"
+msgstr ""
 
 #: keepspace.php:111
 msgid "推荐"
-msgstr "recommend"
+msgstr ""
 
 #: keepspace.php:114 keepspace.php:125 keepspace.php:136
 msgid "优点："
-msgstr "advantage:"
+msgstr ""
 
 #: keepspace.php:114
 msgid "与普通空格显示效果相同；只算1个字符，不影响摘要截取和字符统计"
-msgstr "Displays the same as a regular space; counts as one character, does not affect summary truncation or character statistics"
+msgstr ""
 
 #: keepspace.php:115 keepspace.php:126 keepspace.php:137
 msgid "缺点："
-msgstr "shortcoming:"
+msgstr ""
 
 #: keepspace.php:115
 msgid "在极少数老旧系统中可能显示异常"
-msgstr "May display abnormally in very few legacy systems"
+msgstr ""
 
 #: keepspace.php:116 keepspace.php:127 keepspace.php:138
 msgid "适用："
-msgstr "Applicable to:"
+msgstr ""
 
 #: keepspace.php:116
 msgid "大部分情况的最佳选择"
-msgstr "The best choice for most situations"
+msgstr ""
 
 #: keepspace.php:122
 msgid "中文全角空格 (\\u3000)"
-msgstr "Chinese full-width space (\\u3000)"
+msgstr ""
 
 #: keepspace.php:125
 msgid "只算1个字符；在中文环境下非常自然；宽度正好是一个中文字符"
-msgstr "Counts as one character; appears natural in Chinese contexts; width matches exactly one Chinese character"
+msgstr ""
 
 #: keepspace.php:126
 msgid "比普通空格宽，在英文中会显得突兀"
-msgstr "It is wider than a regular space and may appear awkward in English"
+msgstr ""
 
 #: keepspace.php:127
 msgid "纯中文内容，特别是段落缩进"
-msgstr "Pure Chinese content, especially paragraph indentation"
+msgstr ""
 
 #: keepspace.php:133
 msgid "&amp;nbsp; - HTML实体空格"
-msgstr "&amp;nbsp; - HTML entity space"
+msgstr ""
 
 #: keepspace.php:136
 msgid "兼容性最好；所有浏览器都支持"
-msgstr "Best compatibility; supported by all browsers"
+msgstr ""
 
 #: keepspace.php:137
 msgid "算5个字符，会影响摘要截取和字符统计"
-msgstr "Calculate 5 characters, which will affect the summary extraction and character count"
+msgstr ""
 
 #: keepspace.php:138
 msgid "对兼容性要求极高，不在意字符计数的情况"
-msgstr "The requirement for compatibility is extremely high, and the character count is not a concern"
+msgstr ""
 
 #: keepspace.php:144
 msgid "功能开关"
-msgstr "Function switch"
+msgstr ""
 
 #: keepspace.php:149
 msgid "启用标题空格保护"
-msgstr "Enable title space protection"
+msgstr ""
 
 #: keepspace.php:153
 msgid "启用摘要空格保护"
-msgstr "Enable summary space protection"
+msgstr ""
 
 #: keepspace.php:157
 msgid "启用正文空格保护"
-msgstr "Enable body text space protection"
+msgstr ""
 
 #: keepspace.php:161
 msgid "启用评论空格保护"
-msgstr "Enable comment space protection"
+msgstr ""
 
 #: keepspace.php:167
 msgid "保存设置"
-msgstr "Save settings"
+msgstr ""
 
 #: keepspace.php:219
 msgid "安全验证失败，请刷新页面重试。"
-msgstr "Security verification failed. Please refresh the page and try again."
+msgstr ""

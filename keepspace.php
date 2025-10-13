@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: KeepSpace
- * Description: 自动将空格转换为特殊字符空格，防止HTML省略空格
- * Version: 1.0.4
+ * Description: 自动将空格转换为特殊字符空格，防止被自动省略。
+ * Version: 1.0.5
  * Author: cottboy
  * Author URI: https://www.joyfamily.top
  * Text Domain: keepspace
  * Domain Path: /languages
- * License: GPL v3 or later
+ * License: GPLv3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires at least: 5.0
  * Requires PHP: 7.4
@@ -42,12 +42,22 @@ function keepspace_uninstall() {
 add_action('admin_menu', 'keepspace_admin_menu');
 function keepspace_admin_menu() {
     add_options_page(
-        __('KeepSpace 设置', 'keepspace'),
+        __('KeepSpace', 'keepspace'),
         __('KeepSpace', 'keepspace'),
         'manage_options',
         'keepspace-settings',
         'keepspace_settings_page'
     );
+}
+
+// 在插件列表页面添加"设置"链接
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'keepspace_add_settings_link');
+function keepspace_add_settings_link($links) {
+    // 创建设置链接，指向插件设置页面
+    $settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=keepspace-settings')) . '">' . esc_html(__('设置', 'keepspace')) . '</a>';
+    // 将设置链接添加到数组开头，这样它会显示在"禁用"按钮左边
+    array_unshift($links, $settings_link);
+    return $links;
 }
 
 // 后台设置页面
@@ -87,12 +97,8 @@ function keepspace_settings_page() {
     $space_type = get_option('keepspace_space_type', 'unicode_nbsp');
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html(__('KeepSpace 设置', 'keepspace')); ?></h1>
-        
-        <p style="color: #111; font-weight: bold; margin-bottom: 5px;">
-            <?php echo esc_html(__('重要提醒：更改特殊空格类型只对新保存的内容生效，现有内容中的特殊空格不会自动更改。', 'keepspace')); ?>
-        </p>
-        
+        <h1><?php echo esc_html(__('KeepSpace', 'keepspace')); ?></h1>
+
         <form method="post" action="">
             <?php wp_nonce_field('keepspace_settings_action', 'keepspace_nonce'); ?>
             <table class="form-table">
@@ -164,99 +170,127 @@ function keepspace_settings_page() {
     <?php
 }
 
-// 处理文章保存
+// 处理文章保存（标题、摘要、正文）
 add_filter('wp_insert_post_data', 'keepspace_process_post_data', 5, 2);
 function keepspace_process_post_data($data, $postarr) {
-    // 处理标题 - 使用更强力的处理
+    // 只处理文章(post)和页面(page)，不处理其他自定义文章类型
+    // 这样可以避免误拦截其他插件的自定义文章类型
+    $allowed_post_types = array('post', 'page');
+    if (!isset($data['post_type']) || !in_array($data['post_type'], $allowed_post_types, true)) {
+        return $data;
+    }
+
+    // 排除自动保存和修订版本，只处理真正的保存操作
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return $data;
+    }
+    if (isset($data['post_status']) && $data['post_status'] === 'auto-draft') {
+        return $data;
+    }
+    if (wp_is_post_revision($postarr['ID'] ?? 0)) {
+        return $data;
+    }
+
+    // 处理标题
     if (get_option('keepspace_title', '1') == '1' && !empty($data['post_title'])) {
         $data['post_title'] = keepspace_replace_spaces_simple($data['post_title']);
     }
-    
+
     // 处理摘要
     if (get_option('keepspace_excerpt', '1') == '1' && !empty($data['post_excerpt'])) {
         $data['post_excerpt'] = keepspace_replace_spaces($data['post_excerpt']);
     }
-    
+
     // 处理正文
     if (get_option('keepspace_content', '1') == '1' && !empty($data['post_content'])) {
         $data['post_content'] = keepspace_replace_spaces($data['post_content']);
     }
-    
+
     return $data;
 }
 
-// 最直接的方法：在WordPress开始处理之前就修改POST数据
-add_action('init', 'keepspace_modify_post_data');
-function keepspace_modify_post_data() {
-    // 只在保存文章时处理
-    if (isset($_POST['action']) && ($_POST['action'] == 'editpost' || $_POST['action'] == 'post-quickpress-publish')) {
-        // 验证文章编辑的nonce - 加强验证逻辑
-        $post_id = isset($_POST['post_ID']) ? intval($_POST['post_ID']) : 0;
-        if ($post_id > 0 && isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'update-post_' . $post_id)) {
-            // 额外检查用户权限
-            if (current_user_can('edit_post', $post_id)) {
-                if (get_option('keepspace_title', '1') == '1' && isset($_POST['post_title'])) {
-                    $_POST['post_title'] = keepspace_replace_spaces_simple(sanitize_text_field(wp_unslash($_POST['post_title'])));
-                }
-            }
-        }
-    }
-    
-    // 处理评论提交 - 添加安全验证
-    if (isset($_POST['comment']) && !empty($_POST['comment']) && get_option('keepspace_comment', '1') == '1') {
-        // 校验自定义nonce
-        if (!isset($_POST['keepspace_comment_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['keepspace_comment_nonce'])), 'keepspace_comment_action')) {
-            wp_die(esc_html(__('安全验证失败，请刷新页面重试。', 'keepspace')));
-        }
-        // 安全获取评论内容（仅过滤危险标签，不去除首尾空格）
-        $raw_comment = wp_unslash($_POST['comment']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 已用keepspace_safe_comment过滤
-        // 检查是否是评论提交 - 修复REQUEST_URI消毒
-        $request_uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '';
-        $is_comment_submission = (
-            isset($_POST['comment_post_ID']) || 
-            isset($_POST['submit']) || 
-            (strpos($request_uri, 'wp-comments-post.php') !== false)
-        );
-        if ($is_comment_submission) {
-            // 基本的安全检查：确保comment_post_ID是有效的数字
-            if (isset($_POST['comment_post_ID']) && is_numeric($_POST['comment_post_ID'])) {
-                $post_id = intval($_POST['comment_post_ID']);
-                // 验证文章是否存在且允许评论
-                $post = get_post($post_id);
-                if ($post && comments_open($post_id)) {
-                    // 先替换空格，再进行自定义安全处理（不使用trim的函数）
-                    $comment_content = keepspace_replace_spaces_simple($raw_comment);
-                    $comment_content = keepspace_safe_comment($comment_content);
-                    $_POST['comment'] = $comment_content;
-                }
-            }
-        }
-    }
-}
-
-// 处理评论保存 - 使用WordPress标准钩子作为备用
-add_filter('preprocess_comment', 'keepspace_process_comment_with_verification', 10);
-function keepspace_process_comment_with_verification($commentdata) {
+/**
+ * 处理评论空格转换 - 在WordPress trim之前拦截
+ *
+ * WordPress在 wp_handle_comment_submission() 函数中会执行:
+ * $comment_content = trim( $comment_data['comment'] );
+ *
+ * 所以我们必须在这之前就替换空格
+ *
+ * 方案:在 init 钩子中,只在确认是评论提交时才处理
+ *
+ * 关于安全性说明:
+ * 1. 这个函数不需要nonce验证,因为它只是在WordPress处理评论之前预处理数据
+ * 2. WordPress的wp_handle_comment_submission()函数会进行完整的安全验证
+ * 3. 我们不进行sanitize是因为WordPress后续会统一处理
+ * 4. 这个函数只是替换空格字符,不会引入安全风险
+ */
+add_action('init', 'keepspace_process_comment_before_trim', 1);
+function keepspace_process_comment_before_trim() {
     // 检查设置是否启用
-    if (get_option('keepspace_comment', '1') == '1' && !empty($commentdata['comment_content'])) {
-        // WordPress的preprocess_comment钩子已经有内置的验证机制
-        // 包括spam检查、权限验证等，所以这里是安全的
-        $commentdata['comment_content'] = keepspace_replace_spaces_simple($commentdata['comment_content']);
+    if (get_option('keepspace_comment', '1') != '1') {
+        return;
     }
-    return $commentdata;
+
+    // 只在POST请求时处理 - 使用isset检查避免未定义索引警告
+    if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return;
+    }
+
+    // 只处理评论提交
+    // 通过检查是否存在 comment_post_ID 来判断是否是评论提交
+    // phpcs:disable WordPress.Security.NonceVerification.Missing -- 这是预处理,WordPress后续会验证nonce
+    if (!isset($_POST['comment_post_ID']) || !isset($_POST['comment'])) {
+        return;
+    }
+
+    // 验证comment_post_ID是有效的数字
+    if (!is_numeric($_POST['comment_post_ID'])) {
+        return;
+    }
+
+    // 获取评论内容
+    // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- WordPress的wp_handle_comment_submission()会进行完整的sanitize
+    $comment_content = wp_unslash($_POST['comment']);
+    // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+    // 替换空格
+    $comment_content = keepspace_replace_spaces_simple($comment_content);
+
+    // 更新$_POST
+    $_POST['comment'] = $comment_content;
+    // phpcs:enable WordPress.Security.NonceVerification.Missing
 }
 
-// 处理古腾堡编辑器的REST API请求
-add_filter('rest_pre_insert_post', 'keepspace_process_rest_title', 10, 2);
-function keepspace_process_rest_title($prepared_post, $request) {
+// 处理古腾堡编辑器的REST API请求（标题、摘要、正文）
+add_filter('rest_pre_insert_post', 'keepspace_process_rest_post', 10, 2);
+function keepspace_process_rest_post($prepared_post, $request) {
+    // 只处理文章(post)和页面(page)，不处理其他自定义文章类型
+    $allowed_post_types = array('post', 'page');
+    if (!isset($prepared_post->post_type) || !in_array($prepared_post->post_type, $allowed_post_types, true)) {
+        return $prepared_post;
+    }
+
     // 检查用户权限 - 必须能编辑文章
     if (!current_user_can('edit_post', $prepared_post->ID ?? 0) && !current_user_can('edit_posts')) {
         return $prepared_post;
     }
-    
+
+    // 处理标题
     if (get_option('keepspace_title', '1') == '1' && isset($prepared_post->post_title)) {
         $prepared_post->post_title = keepspace_replace_spaces_simple($prepared_post->post_title);
     }
+
+    // 处理摘要
+    if (get_option('keepspace_excerpt', '1') == '1' && isset($prepared_post->post_excerpt)) {
+        $prepared_post->post_excerpt = keepspace_replace_spaces($prepared_post->post_excerpt);
+    }
+
+    // 处理正文
+    if (get_option('keepspace_content', '1') == '1' && isset($prepared_post->post_content)) {
+        $prepared_post->post_content = keepspace_replace_spaces($prepared_post->post_content);
+    }
+
     return $prepared_post;
 }
 
@@ -314,25 +348,3 @@ function keepspace_replace_spaces_simple($content) {
     // 直接替换所有空格，适用于标题等纯文本内容
     return str_replace(' ', $replacement, $content);
 }
-
-// 在评论表单插入自定义nonce字段
-add_action('comment_form', 'keepspace_comment_nonce_field');
-function keepspace_comment_nonce_field() {
-    wp_nonce_field('keepspace_comment_action', 'keepspace_comment_nonce');
-}
-
-/**
- * 只过滤危险字符，不去除首尾空格，确保安全同时保留开头结尾空格
- */
-function keepspace_safe_comment($comment) {
-    $allowed_tags = array(
-        'a' => array('href' => array(), 'title' => array()),
-        'em' => array(),
-        'strong' => array(),
-        'code' => array(),
-        'blockquote' => array('cite' => array()),
-        'br' => array(),
-        'p' => array(),
-    );
-    return wp_kses($comment, $allowed_tags);
-} 
