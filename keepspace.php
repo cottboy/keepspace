@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: KeepSpace
- * Description: 自动将空格转换为特殊字符空格，防止被自动省略。
+ * Description: 自动将普通空格转换为特殊字符空格，防止被省略。
  * Version: 1.0.5
  * Author: cottboy
  * Author URI: https://www.joyfamily.top

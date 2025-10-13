@@ -8,11 +8,11 @@ Requires PHP: 7.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-自动将空格转换为特殊字符空格，防止被自动省略。
+自动将普通空格转换为特殊字符空格，防止被省略。
 
 == Description ==
 
-WordPress默认会省略连续空格和开头结尾空格，KeepSpace会自动将普通空格转换为特殊字符空格，防止被自动省略。
+WordPress默认会省略连续空格和开头结尾空格，KeepSpace能自动将普通空格转换为特殊字符空格，防止被省略。
 
 **主要功能：**
 
