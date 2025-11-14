@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: KeepSpace
- * Description: 自动将普通空格转换为特殊字符空格，防止被省略。
+ * Description: Automatically converts regular spaces into special character spaces to prevent omission.
  * Version: 1.0.5
  * Author: cottboy
  * Author URI: https://www.joyfamily.top
@@ -73,6 +73,7 @@ function keepspace_settings_page() {
             wp_die(esc_html(__('您没有权限执行此操作。', 'keepspace')));
         }
         
+        // 保存各功能开关设置
         update_option('keepspace_title', isset($_POST['keepspace_title']) ? '1' : '0');
         update_option('keepspace_excerpt', isset($_POST['keepspace_excerpt']) ? '1' : '0');
         update_option('keepspace_content', isset($_POST['keepspace_content']) ? '1' : '0');
@@ -90,11 +91,14 @@ function keepspace_settings_page() {
         echo '<div class="notice notice-success"><p>' . esc_html(__('设置已保存！', 'keepspace')) . '</p></div>';
     }
     
+    // 读取当前设置
     $title_enabled = get_option('keepspace_title', '1');
     $excerpt_enabled = get_option('keepspace_excerpt', '1');
     $content_enabled = get_option('keepspace_content', '1');
     $comment_enabled = get_option('keepspace_comment', '1');
     $space_type = get_option('keepspace_space_type', 'unicode_nbsp');
+    
+    // 输出设置页面表单
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(__('KeepSpace', 'keepspace')); ?></h1>
