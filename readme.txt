@@ -2,7 +2,7 @@
 Contributors: cottboy
 Tags: space, whitespace, writing, indent, formatting
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 1.0.5
 Requires PHP: 7.4
 License: GPLv3 or later
